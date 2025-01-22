@@ -314,19 +314,37 @@ function AuthgearDemo() {
   }, [showError, updateBiometricState]);
 
   const authenticateBiometric = useCallback(async () => {
-    setLoading(true);
+    console.log("#test authenticateBiometric 1");
+    await authgearCapacitor.authenticateBiometric(biometricOptions);
+    console.log("#test authenticateBiometric 1 ok");
     try {
-      const { userInfo } = await authgearCapacitor.authenticateBiometric(
-        biometricOptions
-      );
-      showUserInfo(userInfo);
-    } catch (e: unknown) {
-      showError(e);
-    } finally {
-      setLoading(false);
-      await updateBiometricState();
+      const info = await authgearCapacitor.fetchUserInfo();
+      console.log("#test info 1 ok", info);
+    } catch (e) {
+      console.log("#test info 1 error", e);
     }
-  }, [showError, showUserInfo, updateBiometricState]);
+    console.log("#test current session state", authgearCapacitor.sessionState);
+    console.log("#test logout");
+    await authgearCapacitor.logout({ force: true });
+    console.log("#test current session state", authgearCapacitor.sessionState);
+    try {
+      const info = await authgearCapacitor.fetchUserInfo();
+      console.log("#test info 2 ok", info);
+    } catch (e) {
+      console.log("#test info 2 error", e);
+    }
+    console.log("#test current session state", authgearCapacitor.sessionState);
+    console.log("#test authenticateBiometric 2");
+    await authgearCapacitor.authenticateBiometric(biometricOptions);
+    console.log("#test authenticateBiometric 2 ok");
+    try {
+      const info = await authgearCapacitor.fetchUserInfo();
+      console.log("#test info 3 ok", info);
+    } catch (e) {
+      console.log("#test info 3 error", e);
+    }
+    console.log("#test current session state", authgearCapacitor.sessionState);
+  }, []);
 
   const disableBiometric = useCallback(async () => {
     setLoading(true);
